@@ -15,10 +15,10 @@
             </p>
             <p class="control loggedIn" v-if="isLoggedIn">
               <section class="avatar mr-3">
+                <figcaption>{{ user.name }}</figcaption>
                 <figure class="image is-32x32">
                   <img class="is-rounded" :src="user.image">
                 </figure>
-                <figcaption>{{ user.name }}</figcaption>
               </section>
               <a class="button is-primary" @click="logout()">
                 <span>Log out</span>
@@ -53,7 +53,6 @@ export default {
 
 .avatar {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
 }
 </style>

@@ -13,7 +13,7 @@
       </b-field>
       <button class="button is-success">Add Post</button>
     </form>
-    <div class="posts columns">
+    <div class="posts columns is-multiline">
       <div class="card column is-4" v-for="post in posts" :key="post.id">
         <div class="card-image" v-if="isImage(post.URL)">
           <figure class="image is-4by3">
@@ -24,7 +24,7 @@
           <div class="media">
             <div class="media-left">
               <figure class="image is-48x48">
-                <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                <img :src="usersById[post.user_id].image" alt="Placeholder image">
               </figure>
             </div>
             <div class="media-content">
@@ -32,7 +32,7 @@
               <p class="title is-4" v-if="post.URL">
                 <a :href="post.URL" target="_blank">{{ post.title }}</a>
               </p>
-              <p class="subtitle is-6">@johnsmith</p>
+              <p class="subtitle is-6">{{ usersById[post.user_id].name }}</p>
             </div>
           </div>
           <div class="content">
@@ -61,6 +61,7 @@ export default {
     showForm: false,
   }),
   mounted() {
+    this.initUsers();
     this.initSubreddit(this.$route.params.name);
   },
   watch: {
@@ -73,16 +74,27 @@ export default {
   },
   computed: {
     ...mapState('subreddit', ['posts']),
-    ...mapGetters('subreddit', ['subreddit']),
+    ...mapState('auth', ['isLoggedIn', 'user']),
+    ...mapGetters({
+      subreddit: 'subreddit/subreddit',
+      usersById: 'users/usersById',
+    }),
   },
   methods: {
     isImage(url) {
       return url.match(/(png|jpg|jpeg|gif)$/);
     },
     ...mapActions('subreddit', ['createPost', 'initSubreddit', 'initPosts']),
+    ...mapActions('users', { initUsers: 'init' }),
     async onCreatePost() {
       if (this.post.title && (this.post.description || this.post.URL)) {
-        await this.createPost(this.post);
+        this.createPost(this.post);
+        this.post = {
+          title: '',
+          description: '',
+          URL: '',
+        };
+        this.showForm = false;
       }
     },
   },
